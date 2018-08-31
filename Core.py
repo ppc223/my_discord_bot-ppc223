@@ -4,6 +4,8 @@ import asyncio
 from discord.ext import commands
 import discord
 
+Version = '0.1'
+
 ***REMOVED***
 
 client = commands.Bot(command_prefix= '!')
@@ -22,7 +24,7 @@ async def on_ready():
     # Print startup message to speciified channel with startup time
     current_time = str(time.asctime(time.localtime(time.time())))
     await client.send_message(discord.Object(id='269203549186031617'),
-        current_time + ' : Bot Ready')
+        current_time + ' : Bot Ready, version = ' + Version)
 
     # Rich presence times out after a while so updates every 12 hours
     while True:
