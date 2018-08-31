@@ -22,7 +22,7 @@ async def on_ready():
     server when bot starts
     """
     # Print startup message to speciified channel with startup time
-    current_time = datetime.datetime.now().strftime('%A %B %Y %X')
+    current_time = datetime.datetime.now().strftime('%A %B %d %Y %X')
     await client.send_message(discord.Object(id='269203549186031617'),
         current_time + ' : Bot Ready, version = ' + Version)
 
@@ -205,7 +205,7 @@ async def bot_update():
             print(server.id + ' : ' + server.name)
             servs = servs + server.id + ' : ' + server.name + '\n'
 
-        current_time = datetime.datetime.now().strftime('%A %B %Y %X')
+        current_time = datetime.datetime.now().strftime('%A %B %d %Y %X')
         print(current_time)
 
         emb = discord.Embed(
