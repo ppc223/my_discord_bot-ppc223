@@ -8,7 +8,7 @@ Version = '0.1'
 
 ***REMOVED***
 
-client = commands.Bot(command_prefix= '!')
+client = commands.Bot(command_prefix= ('!','!!'))
 # client.remove_command('help')
 
 players = {}
@@ -29,11 +29,11 @@ async def on_ready():
     # Rich presence times out after a while so updates every 12 hours
     while True:
         await client.change_presence(game=discord.Game(
-            name='!Communist_Propaganda'))
+            name='!communist_propaganda'))
         await asyncio.sleep(12 * 3600)
 
 @client.command(name='ssf')
-async def StupidSexyFlanders():
+async def stupid_sexy_slanders():
     """Posts flanders picture to channel"""
     ssfurl = 'https://cdn.discordapp.com/attachments/268166253288488960/478362864340434966/Stupid_Sexy_Flanders_Tapped_Out.png'
     emb = discord.Embed().set_image(url=ssfurl)
@@ -160,7 +160,7 @@ async def resume(ctx):
     players[id].resume()
 
 @client.command(pass_context=True, name='commie')
-async def Communist_Propaganda(ctx):
+async def communist_propaganda(ctx):
     """Bot plays communist music"""
     id = ctx.message.server.id
     try:
