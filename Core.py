@@ -124,6 +124,8 @@ async def join(ctx):
             await voice_client.disconnect()
             await client.join_voice_channel(channel)
 
+    channels[server.id] = ctx.message.channel
+
 @client.command(pass_context=True)
 async def leave(ctx):
     """Bot leaves voice channel in server"""
