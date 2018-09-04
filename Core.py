@@ -48,15 +48,15 @@ async def on_voice_state_update(before, after):
             [x.bot for x in voice_client.channel.voice_members])):
             # and if only bots are in voice channel (rather there are not
             # any members who aren't bots)
-            id = after.server.id
-            channel = channels[id]
-            await client.send_message(channel,
-            'Pausing **{}**'.format(player.title))
+
             try:
                 # Bot trys to pauses music stream
-
+                id = after.server.id
+                channel = channels[id]
                 player = players[id]
                 players[id].pause()
+                await client.send_message(channel,
+                'Pausing **{}**'.format(player.title))
             except KeyError:
                 pass
 
