@@ -17,7 +17,7 @@ players = {}
 # Dictionary of all player invoking channels per server with id as key
 channels = {}
 
-# TODO: add player queues, add catgirls, use cogs
+# TODO: add player queues, add catgirls, use cogs, add shutdown command
 # TODO: add youtube search
 
 @client.event
@@ -48,12 +48,13 @@ async def on_voice_state_update(before, after):
             [x.bot for x in voice_client.channel.voice_members])):
             # and if only bots are in voice channel (rather there are not
             # any members who aren't bots)
+            id = after.server.id
             channel = channels[id]
             await client.send_message(channel,
             'Pausing **{}**'.format(player.title))
             try:
                 # Bot trys to pauses music stream
-                id = after.server.id
+
                 player = players[id]
                 players[id].pause()
             except KeyError:
