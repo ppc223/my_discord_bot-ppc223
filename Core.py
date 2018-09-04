@@ -29,7 +29,7 @@ async def on_ready():
     # Print startup message to speciified channel with startup time
     current_time = datetime.datetime.now().strftime('%A %B %d %Y %X')
     await client.send_message(discord.Object(id='269203549186031617'),
-        f'**{current_time} : Bot Ready**, version = {Version}')
+        '**{} : Bot Ready**, version = {}'.format(current_time, Version))
 
     # Rich presence times out after a while so updates every 12 hours
     while True:
@@ -50,7 +50,7 @@ async def on_voice_state_update(before, after):
             # any members who aren't bots)
             channel = channels[id]
             await client.send_message(channel,
-            f'Pausing **{player.title}**')
+            'Pausing **{}**'.format(player.title))
             try:
                 # Bot trys to pauses music stream
                 id = after.server.id
@@ -82,7 +82,7 @@ async def clear(ctx, amount=5):
             messages.append(message)
         length = len(messages)
         await client.delete_messages(messages)
-        await client.say(f'**Deleted {length} messages**')
+        await client.say('**Deleted {} messages**'.format(length))
 
 # @client.command(pass_context=True)
 # async def help(ctx, pm=False):
@@ -111,7 +111,7 @@ async def join(ctx):
     except discord.errors.InvalidArgument:
         # Except if user is not in a voice channel
         await client.say(
-        f'**{ctx.message.author.name}** is not in a voice channel.')
+        '**{}** is not in a voice channel.'.format(ctx.message.author.name))
     except discord.errors.ClientException:
         # Except bot is already in a voice channel
         voice_client = client.voice_client_in(server)
@@ -163,7 +163,7 @@ async def play(ctx, url):
         # First stops any existing players
         player_title = players[id].title
         players[id].stop()
-        await client.say(f'Now stopping **{player_title}**')
+        await client.say('Now stopping **{}**'.format(player_title))
     except KeyError:
         # If nothing was playing does nothing
         pass
@@ -175,7 +175,7 @@ async def play(ctx, url):
     player.start()
 
     await client.delete_message(ctx.message)
-    await client.say(f'Now Playing **{player.title}**')
+    await client.say('Now Playing **{}**'.format(player.title))
 
 @client.command(pass_context=True)
 async def pause(ctx):
@@ -234,7 +234,7 @@ async def communist_propaganda(ctx):
         # First stops any existing players
         player_title = players[id].title
         players[id].stop()
-        await client.say(f'Now stopping **{player_title}**')
+        await client.say('Now stopping **{}**'.format(player_title))
     except KeyError:
         # If nothing was playing does nothing
         pass
@@ -247,7 +247,7 @@ async def communist_propaganda(ctx):
     player.start()
 
     await client.delete_message(ctx.message)
-    await client.say(f'Now Playing **{player.title}**')
+    await client.say('Now Playing **{}**'.format(player.title))
 
 async def bot_update():
     """
