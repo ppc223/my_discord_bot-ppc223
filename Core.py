@@ -3,10 +3,9 @@ import datetime
 import asyncio
 from discord.ext import commands
 import discord
+from btoken import TOKEN as TOKEN # Imports token for running bot from file
 
 Version = '0.1'
-
-***REMOVED***
 
 client = commands.Bot(command_prefix= ('!','!!'))
 # client.remove_command('help')
@@ -17,8 +16,11 @@ players = {}
 # Dictionary of all player invoking channels per server with id as key
 channels = {}
 
-# TODO: add player queues, add catgirls, use cogs, add shutdown command
-# TODO: add youtube search
+# TODO: add player queues, add catgirls, use cogs, add shutdown command?
+# TODO: add youtube search fix (phantom) pause bug ie. check it did something before saying it is, add youtube playlists
+# TODO delete player fron dict when stopped
+# TODO see if i need channel dict
+# TODO add new task to periodically poll players to see if completed and then delete thoses that are
 
 @client.event
 async def on_ready():
@@ -34,7 +36,7 @@ async def on_ready():
     # Rich presence times out after a while so updates every 12 hours
     while True:
         await client.change_presence(game=discord.Game(
-            name='!communist_propaganda'))
+            name='!help'))
         await asyncio.sleep(12 * 3600)
 
 @client.event
@@ -76,7 +78,7 @@ async def clear(ctx, amount=5):
     them)
     """
     server = ctx.message.server
-    if server.name == 'Test':
+    if ctx.message.author.id == '162355403940691968':
         channel = ctx.message.channel
         messages = []
         async for message in client.logs_from(channel, limit=int(amount)):
@@ -84,6 +86,9 @@ async def clear(ctx, amount=5):
         length = len(messages)
         await client.delete_messages(messages)
         await client.say('**Deleted {} messages**'.format(length))
+    else:
+        await client.say("You don't have the required permissions")
+
 
 # @client.command(pass_context=True)
 # async def help(ctx, pm=False):
@@ -100,6 +105,7 @@ async def clear(ctx, amount=5):
 #         await client.send_message(ctx.message.author, embed=emb)
 #     else:
 #         await client.say(embed=emb)
+
 
 @client.command(pass_context=True)
 async def join(ctx):
@@ -134,7 +140,7 @@ async def leave(ctx):
         voice_client = client.voice_client_in(server)
         await voice_client.disconnect()
     except AttributeError:
-        await client.say('I am not in a voice channel comrade.')
+        await client.say('I am not in a voice channel.')
 
 @client.command(pass_context=True)
 async def play(ctx, url):
@@ -183,74 +189,80 @@ async def play(ctx, url):
 @client.command(pass_context=True)
 async def pause(ctx):
     """Bot pauses music stream"""
-    try:
-        id = ctx.message.server.id
+    id = ctx.message.server.id
+    if id in players:
         player = players[id]
         await client.say('Pausing ' + player.title)
         players[id].pause()
-    except KeyError:
-        pass
+    else:
+        await client.say('Nothing is playing')
 
 @client.command(pass_context=True)
 async def stop(ctx):
     """Bot stops music stream"""
     id = ctx.message.server.id
-    player = players[id]
-    await client.say('Stopping ' + player.title)
-    players[id].stop()
+    if id in players:
+        player = players[id]
+        await client.say('Stopping ' + player.title)
+        players[id].stop()
+        del players[id]
+    else:
+        await client.say('Queue is empty')
 
 @client.command(pass_context=True)
 async def resume(ctx):
     """Bot resumes music stream"""
     id = ctx.message.server.id
-    player = players[id]
-    await client.say('Resuming ' + player.title)
-    players[id].resume()
+    if (id in players and not players[id].is_playing()
+            and not players[id].is_done()):
+        player = players[id]
+        await client.say('Resuming ' + player.title)
+        players[id].resume()
 
-@client.command(pass_context=True, name='commie')
-async def communist_propaganda(ctx):
-    """Bot plays communist music"""
-    id = ctx.message.server.id
-    channel = ctx.message.author.voice.voice_channel
-    server = ctx.message.server
-
-    try:
-        # Try to join channel
-        await client.join_voice_channel(channel)
-    except discord.errors.InvalidArgument:
-        # Except if user is not in a voice channel
-        await client.say(ctx.message.author.name +
-            ' is not in a voice channel.')
-        return
-    except discord.errors.ClientException:
-        # Except bot is already in a voice channel
-        voice_client = client.voice_client_in(server)
-        if voice_client.channel == channel:
-            # Bot is in same channel as user
-            pass
-        else:
-            # Bot changes channel to user
-            await voice_client.disconnect()
-            await client.join_voice_channel(channel)
-
-    try:
-        # First stops any existing players
-        player_title = players[id].title
-        players[id].stop()
-        await client.say('Now stopping **{}**'.format(player_title))
-    except KeyError:
-        # If nothing was playing does nothing
-        pass
-
-    voice_client = client.voice_client_in(server)
-    player = await voice_client.create_ytdl_player(
-    'https://www.youtube.com/watch?v=TaNtIYZj0m0')
-    players[server.id] = player
-    channels[server.id] = ctx.message.channel
-    player.start()
-
-    await client.delete_message(ctx.message)
-    await client.say('Now Playing **{}**'.format(player.title))
+# @client.command(pass_context=True, name='commie')
+# async def communist_propaganda(ctx):
+#     """Bot plays communist music"""
+#     id = ctx.message.server.id
+#     channel = ctx.message.author.voice.voice_channel
+#     server = ctx.message.server
+#
+#     try:
+#         # Try to join channel
+#         await client.join_voice_channel(channel)
+#     except discord.errors.InvalidArgument:
+#         # Except if user is not in a voice channel
+#         await client.say(ctx.message.author.name +
+#             ' is not in a voice channel.')
+#         return
+#     except discord.errors.ClientException:
+#         # Except bot is already in a voice channel
+#         voice_client = client.voice_client_in(server)
+#         if voice_client.channel == channel:
+#             # Bot is in same channel as user
+#             pass
+#         else:
+#             # Bot changes channel to user
+#             await voice_client.disconnect()
+#             await client.join_voice_channel(channel)
+#
+#     try:
+#         # First stops any existing players
+#         player_title = players[id].title
+#         players[id].stop()
+#         await client.say('Now stopping **{}**'.format(player_title))
+#     except KeyError:
+#         # If nothing was playing does nothing
+#         pass
+#
+#     voice_client = client.voice_client_in(server)
+#     player = await voice_client.create_ytdl_player(
+#     'https://www.youtube.com/watch?v=TaNtIYZj0m0')
+#     players[server.id] = player
+#     channels[server.id] = ctx.message.channel
+#     player.start()
+#
+#     await client.delete_message(ctx.message)
+#     await client.say('Now Playing **{}**'.format(player.title))
 
 async def bot_update():
     """
