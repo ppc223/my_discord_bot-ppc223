@@ -3,7 +3,8 @@ import datetime
 import asyncio
 from discord.ext import commands
 import discord
-from btoken import TOKEN as TOKEN # Imports token for running bot from file
+from statics import test_channel_id
+from statics import bot_token as TOKEN
 
 Version = '0.1'
 
@@ -18,19 +19,17 @@ channels = {}
 
 # TODO: add player queues, add catgirls, use cogs, add shutdown command?
 # TODO: add youtube search fix (phantom) pause bug ie. check it did something before saying it is, add youtube playlists
-# TODO delete player fron dict when stopped
-# TODO see if i need channel dict
 # TODO add new task to periodically poll players to see if completed and then delete thoses that are
 
 @client.event
 async def on_ready():
     """
-    Posts current time and a \'Bot Ready\' message to bot-status in my test
+    Posts current time and a \'Bot Ready\' message to bot-status in a test
     server when bot starts
     """
     # Print startup message to speciified channel with startup time
     current_time = datetime.datetime.now().strftime('%A %B %d %Y %X')
-    await client.send_message(discord.Object(id='269203549186031617'),
+    await client.send_message(discord.Object(id=test_channel_id),
         '**{} : Bot Ready**, version = {}'.format(current_time, Version))
 
     # Rich presence times out after a while so updates every 12 hours
@@ -78,34 +77,13 @@ async def clear(ctx, amount=5):
     them)
     """
     server = ctx.message.server
-    if ctx.message.author.id == '162355403940691968':
-        channel = ctx.message.channel
-        messages = []
-        async for message in client.logs_from(channel, limit=int(amount)):
-            messages.append(message)
-        length = len(messages)
-        await client.delete_messages(messages)
-        await client.say('**Deleted {} messages**'.format(length))
-    else:
-        await client.say("You don't have the required permissions")
-
-
-# @client.command(pass_context=True)
-# async def help(ctx, pm=False):
-#     emb = discord.Embed(
-#         title = 'Help',
-#         colour = discord.Colour.pink()
-#     )
-#
-#     emb.add_field(name='!ssf', value='Returns StupidSexyFlanders Picture',
-#         inline=False)
-#     emb.add_field(name='clear', value='Clears number of messages, default 5',
-#         inline=False)
-#     if pm == True:
-#         await client.send_message(ctx.message.author, embed=emb)
-#     else:
-#         await client.say(embed=emb)
-
+    channel = ctx.message.channel
+    messages = []
+    async for message in client.logs_from(channel, limit=int(amount)):
+        messages.append(message)
+    length = len(messages)
+    await client.delete_messages(messages)
+    await client.say('**Deleted {} messages**'.format(length))
 
 @client.command(pass_context=True)
 async def join(ctx):
@@ -219,55 +197,10 @@ async def resume(ctx):
         await client.say('Resuming ' + player.title)
         players[id].resume()
 
-# @client.command(pass_context=True, name='commie')
-# async def communist_propaganda(ctx):
-#     """Bot plays communist music"""
-#     id = ctx.message.server.id
-#     channel = ctx.message.author.voice.voice_channel
-#     server = ctx.message.server
-#
-#     try:
-#         # Try to join channel
-#         await client.join_voice_channel(channel)
-#     except discord.errors.InvalidArgument:
-#         # Except if user is not in a voice channel
-#         await client.say(ctx.message.author.name +
-#             ' is not in a voice channel.')
-#         return
-#     except discord.errors.ClientException:
-#         # Except bot is already in a voice channel
-#         voice_client = client.voice_client_in(server)
-#         if voice_client.channel == channel:
-#             # Bot is in same channel as user
-#             pass
-#         else:
-#             # Bot changes channel to user
-#             await voice_client.disconnect()
-#             await client.join_voice_channel(channel)
-#
-#     try:
-#         # First stops any existing players
-#         player_title = players[id].title
-#         players[id].stop()
-#         await client.say('Now stopping **{}**'.format(player_title))
-#     except KeyError:
-#         # If nothing was playing does nothing
-#         pass
-#
-#     voice_client = client.voice_client_in(server)
-#     player = await voice_client.create_ytdl_player(
-#     'https://www.youtube.com/watch?v=TaNtIYZj0m0')
-#     players[server.id] = player
-#     channels[server.id] = ctx.message.channel
-#     player.start()
-#
-#     await client.delete_message(ctx.message)
-#     await client.say('Now Playing **{}**'.format(player.title))
-
 async def bot_update():
     """
     Looping Function to update on current bot status by printing and sending to
-    bot-status in my test server, a list of servers the bot is currently
+    bot-status in a test server, a list of servers the bot is currently
     connected to along with the time and date.
     """
     await client.wait_until_ready()
@@ -287,7 +220,7 @@ async def bot_update():
         )
         emb.add_field(name='Time:', value=current_time, inline=False)
         emb.add_field(name='Current Servers:', value=servs, inline=False)
-        await client.send_message(discord.Object(id='478584604362539008'),
+        await client.send_message(discord.Object(id=test_channel_id),
             embed=emb)
 
         await asyncio.sleep(6000)
