@@ -1,7 +1,7 @@
 # README
 This is a Discord chat bot written with python and the discord.py library.
 
-This was an entirely personal learning project.
+This was an entirely personal learning project and is not being actively worked on.
 
 ## Features
 
