@@ -17,10 +17,6 @@ players = {}
 # Dictionary of all player invoking channels per server with id as key
 channels = {}
 
-# TODO: add player queues, add catgirls, use cogs, add shutdown command?
-# TODO: add youtube search fix (phantom) pause bug ie. check it did something before saying it is, add youtube playlists
-# TODO add new task to periodically poll players to see if completed and then delete thoses that are
-
 @client.event
 async def on_ready():
     """
