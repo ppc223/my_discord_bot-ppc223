@@ -1,4 +1,0 @@
-# TODO: add player queues, add catgirls, use cogs, add shutdown command
-# TODO: add youtube search fix (phantom) pause bug ie. check it did something before saying it is
-# TODO delete player fron dict when stopped
-# TODO see if i need channel dict
